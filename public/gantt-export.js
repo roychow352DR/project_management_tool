@@ -92,7 +92,8 @@ export function buildGanttSVG({state,project,timeline,rows,pageLabel='',today=ne
   body+=`<g fill="none" stroke="${theme.grid}"><path d="M${left} ${head}V${gridBottom}M${padding} ${gridBottom}H${width-padding}"/><rect class="chart-border" x="${padding}" y="${head}" width="${width-padding*2}" height="${chartBottom-head}" rx="6"/></g>`;
   if(todayDay>=timeline.start&&todayDay<timeline.end){
     const x=left+(todayDay-timeline.start+0.5)*timeline.dayWidth,labelX=Math.max(left+25,Math.min(left+chartWidth-25,x));
-    body+=`<g class="today-marker" fill="${theme.today}"><title>Today: ${esc(today)}</title><path d="M${x} ${headerBottom}V${gridBottom}" fill="none" stroke="${theme.today}" stroke-width="1.25" stroke-dasharray="5 3"/>${text(labelX,headerBottom+15,'TODAY','text-anchor="middle" font-size="11" font-weight="600"')}</g>`;
+    // Reserve the body padding for the label; the line begins below it.
+    body+=`<g class="today-marker" fill="${theme.today}"><title>Today: ${esc(today)}</title><path class="today-line" d="M${x} ${gridTop}V${gridBottom}" fill="none" stroke="${theme.today}" stroke-width="1.25" stroke-dasharray="5 3"/><rect class="today-label-background" x="${labelX-25}" y="${headerBottom+2}" width="50" height="18" rx="2" fill="${theme.background}"/>${text(labelX,headerBottom+15,'TODAY','text-anchor="middle" font-size="11" font-weight="600"')}</g>`;
   }
   body+=dateLabels.join('');
   statuses.forEach((status,i)=>{

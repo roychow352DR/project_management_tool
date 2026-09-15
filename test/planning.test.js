@@ -54,7 +54,7 @@ test('Today marker uses date geometry in all scales and is omitted outside the s
   const base=createTimeline(s.tasks,scale),timeline=timelineWindow(base,toDay('2026-09-01'),toDay('2026-10-01'),900);
   const render=today=>buildGanttSVG({state:s,project:s.projects[0],timeline,rows:ganttRows(s.tasks,['Design']),today}).svg;
   const svg=render('2026-09-15');assert.match(svg,/class="today-marker"/);assert.match(svg,/font-size="11"[^>]*>TODAY</);
-  assert.match(svg,/M795 144V/); // Day 15 midpoint: 360 + 14.5 * 30.
+  assert.match(svg,/M795 168V/); // Day 15 midpoint; line starts below the label band.
   assert.doesNotMatch(render('2026-08-31'),/class="today-marker"/);assert.doesNotMatch(render('2026-10-01'),/class="today-marker"/);
  }
 });
@@ -68,6 +68,23 @@ test('date ranges remain visible at either timeline edge and retain the true dat
   if(i===0){assert.equal(label[2],'start');assert.match(label[3],/01 Sept? 2026/);}
   if(i===1){assert.equal(label[2],'end');assert.match(label[3],/30 Sept? 2026/);}
   if(i===2)assert.match(label[3],/^01 Aug 2026 - 15 Oct 2026$/);
+ }
+});
+test('Today labels have clear space above their lines in every export format and appearance',()=>{
+ const s=workspace();s.projects[0].name='Regional quality assurance programme for mobile applications and release readiness';
+ for(const scale of ['daily','monthly','quarterly'])for(const format of ['pdf','png','svg'])for(const appearance of ['light','dark']){
+  const timeline=selectedTimeline(createTimeline(s.tasks,scale),'2026-09-01','2026-09-30');
+  for(const today of ['2026-09-01','2026-09-15','2026-09-30']){
+   const svg=createExportPlan({format,appearance,state:s,project:s.projects[0],tasks:s.tasks,timeline,today}).page(0).svg;
+   const marker=svg.match(/<g class="today-marker"[^>]*>(.*?)<\/g>/s)[1];
+   const line=marker.match(/<path\b[^>]*d="M([\d.]+) ([\d.]+)V([\d.]+)"/);
+   const label=marker.match(/<text x="([\d.]+)" y="([\d.]+)"[^>]*font-size="11"[^>]*>TODAY<\/text>/);
+   assert.ok(Number(line[2])>=Number(label[2])+7,`${scale}/${format}/${appearance}/${today}: line must start below the label`);
+   assert.ok(Number(line[3])>Number(line[2]));
+   const background=marker.match(/<rect class="today-label-background" x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"[^>]*fill="([^"]+)"/);
+   assert.ok(Number(background[2])+Number(background[4])<Number(line[2]));
+   assert.equal(background[5],appearance==='dark'?'#171b34':'#ffffff');
+  }
  }
 });
 test('all export formats share the Today marker and date ranges used in the preview',()=>{
@@ -112,7 +129,7 @@ test('export appearance defaults to white and preserves schedule geometry and st
    assert.ok(artifact.svg.includes(`fill="${statusColor(s,s.tasks[0].status)}"`));
    assert.ok(artifact.svg.includes('01 Sept 2026 - 15 Sept 2026'));
   }
-  assert.deepEqual(light.svg.match(/<path d="M[\d.]+ 144V[^>]+/)[0].split(' fill=')[0],dark.svg.match(/<path d="M[\d.]+ 144V[^>]+/)[0].split(' fill=')[0]);
+  assert.equal(light.svg.match(/<path class="today-line" d="([^"]+)"/)[1],dark.svg.match(/<path class="today-line" d="([^"]+)"/)[1]);
  }
 });
 
