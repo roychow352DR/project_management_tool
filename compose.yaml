@@ -1,0 +1,10 @@
+services:
+  orbit:
+    build: .
+    ports:
+      - "${ORBIT_PORT:-3001}:3000"
+    volumes:
+      - orbit-data:/app/data
+    restart: unless-stopped
+volumes:
+  orbit-data:

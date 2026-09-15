@@ -1,0 +1,224 @@
+{
+  "projects": [
+    {
+      "id": "p1",
+      "name": "Website redesign",
+      "description": "Website redesign and customer experience",
+      "color": "#7464d8"
+    },
+    {
+      "id": "p2",
+      "name": "Mobile app",
+      "description": "Mobile application development",
+      "color": "#57a996"
+    },
+    {
+      "id": "p3",
+      "name": "Brand refresh",
+      "description": "Brand identity development",
+      "color": "#da9b62"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "QA-101",
+      "projectId": "p1",
+      "title": "Discovery & research",
+      "start": "2026-09-01",
+      "end": "2026-09-05",
+      "status": "Done",
+      "priority": "High",
+      "owner": "Alex Morgan",
+      "group": "Discovery",
+      "progress": 100,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-102",
+      "projectId": "p1",
+      "title": "Stakeholder interviews",
+      "start": "2026-09-02",
+      "end": "2026-09-07",
+      "status": "Done",
+      "priority": "Medium",
+      "owner": "Jamie Chen",
+      "group": "Discovery",
+      "progress": 100,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-103",
+      "projectId": "p1",
+      "title": "Competitive landscape",
+      "start": "2026-09-03",
+      "end": "2026-09-09",
+      "status": "Done",
+      "priority": "Medium",
+      "owner": "Sam Taylor",
+      "group": "Discovery",
+      "progress": 100,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-104",
+      "projectId": "p1",
+      "title": "Define product requirements",
+      "start": "2026-09-07",
+      "end": "2026-09-12",
+      "status": "Done",
+      "priority": "High",
+      "owner": "Riley Park",
+      "group": "Discovery",
+      "progress": 100,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-105",
+      "projectId": "p1",
+      "title": "Design & experience",
+      "start": "2026-09-09",
+      "end": "2026-09-15",
+      "status": "In progress",
+      "priority": "Medium",
+      "owner": "Alex Morgan",
+      "group": "Design",
+      "progress": 45,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-106",
+      "projectId": "p1",
+      "title": "Information architecture",
+      "start": "2026-09-09",
+      "end": "2026-09-13",
+      "status": "In progress",
+      "priority": "Medium",
+      "owner": "Jamie Chen",
+      "group": "Design",
+      "progress": 45,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-107",
+      "projectId": "p1",
+      "title": "Wireframes & user flows",
+      "start": "2026-09-14",
+      "end": "2026-09-20",
+      "status": "In progress",
+      "priority": "High",
+      "owner": "Sam Taylor",
+      "group": "Design",
+      "progress": 45,
+      "dependencies": [
+        "QA-106"
+      ],
+      "description": ""
+    },
+    {
+      "id": "QA-108",
+      "projectId": "p1",
+      "title": "Visual design system",
+      "start": "2026-09-14",
+      "end": "2026-09-21",
+      "status": "In progress",
+      "priority": "Medium",
+      "owner": "Riley Park",
+      "group": "Design",
+      "progress": 45,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-109",
+      "projectId": "p1",
+      "title": "Interactive prototype",
+      "start": "2026-09-18",
+      "end": "2026-09-24",
+      "status": "In progress",
+      "priority": "Medium",
+      "owner": "Alex Morgan",
+      "group": "Design",
+      "progress": 45,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-110",
+      "projectId": "p1",
+      "title": "Build & deliver",
+      "start": "2026-09-20",
+      "end": "2026-09-30",
+      "status": "To do",
+      "priority": "High",
+      "owner": "Jamie Chen",
+      "group": "Development",
+      "progress": 0,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-111",
+      "projectId": "p1",
+      "title": "Frontend development",
+      "start": "2026-09-25",
+      "end": "2026-10-03",
+      "status": "To do",
+      "priority": "Medium",
+      "owner": "Sam Taylor",
+      "group": "Development",
+      "progress": 0,
+      "dependencies": [
+        "QA-109"
+      ],
+      "description": ""
+    },
+    {
+      "id": "QA-112",
+      "projectId": "p1",
+      "title": "Backend & integrations",
+      "start": "2026-09-21",
+      "end": "2026-09-29",
+      "status": "To do",
+      "priority": "Medium",
+      "owner": "Riley Park",
+      "group": "Development",
+      "progress": 0,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-113",
+      "projectId": "p1",
+      "title": "Quality assurance",
+      "start": "2026-09-26",
+      "end": "2026-09-30",
+      "status": "To do",
+      "priority": "High",
+      "owner": "Alex Morgan",
+      "group": "Development",
+      "progress": 0,
+      "dependencies": [],
+      "description": ""
+    },
+    {
+      "id": "QA-114",
+      "projectId": "p1",
+      "title": "Launch readiness",
+      "start": "2026-09-30",
+      "end": "2026-09-30",
+      "status": "To do",
+      "priority": "Medium",
+      "owner": "Jamie Chen",
+      "group": "Development",
+      "progress": 0,
+      "dependencies": [],
+      "description": ""
+    }
+  ]
+}
