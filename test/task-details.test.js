@@ -27,26 +27,26 @@ test('description rendering escapes markup and never creates executable links',(
   assert.equal(descriptionParts('https:// www. qa@www.example.com').filter(part=>part.href).length,0);
 });
 
-test('QA prefix migration preserves tasks, dependencies and Trash recovery links',()=>{
+test('Numeric ID migration preserves tasks, dependencies and Trash recovery links',()=>{
   const base={projectId:'p',title:'QA testing',status:'To do',group:'Discovery',start:'',end:'',backlog:true,description:'Reference ORB-101',customValues:{reference:'ORB-101'}};
   const s=normalize({projects:[{id:'p',name:'QA'}],tasks:[]});
   s.tasks=[{...base,id:'ORB-101',dependencies:[]},{...base,id:'ORB-102',dependencies:['ORB-101']}];
   removeItem(s,'task','ORB-101');
   assert.equal(migrateTaskIds(s),true);
-  assert.equal(s.tasks[0].id,'QA-102');assert.equal(s.trash[0].tasks[0].id,'QA-101');
-  assert.deepEqual(s.trash[0].links,[{taskId:'QA-102',dependency:'QA-101'}]);
+  assert.equal(s.tasks[0].id,'1');assert.equal(s.trash[0].tasks[0].id,'2');
+  assert.deepEqual(s.trash[0].links,[{taskId:'1',dependency:'2'}]);
   restoreItem(s,s.trash[0].id);
-  assert.deepEqual(s.tasks.find(task=>task.id==='QA-102').dependencies,['QA-101']);
+  assert.deepEqual(s.tasks.find(task=>task.id==='1').dependencies,['2']);
   assert.equal(s.tasks[0].description,'Reference ORB-101');assert.deepEqual(s.tasks[0].customValues,{reference:'ORB-101'});
   const copy=structuredClone(s);assert.equal(migrateTaskIds(s),false);assert.deepEqual(s,copy);
 });
 
-test('QA migration handles existing QA IDs without collisions or misdirecting links',()=>{
+test('Numeric migration handles mixed legacy IDs without collisions or misdirecting links',()=>{
   const s={tasks:[{id:'ORB-101',dependencies:[]},{id:'QA-101',dependencies:['ORB-101']},{id:'QA-101-2',dependencies:['QA-101']},{id:'ORB-101-3',dependencies:['ORB-101']}],trash:[]};
   migrateTaskIds(s);
   assert.equal(new Set(s.tasks.map(task=>task.id)).size,4);
-  assert.ok(s.tasks.every(task=>task.id.startsWith('QA-')));
-  assert.equal(s.tasks[1].id,'QA-101');assert.deepEqual(s.tasks[1].dependencies,[s.tasks[0].id]);
-  assert.deepEqual(s.tasks[2].dependencies,['QA-101']);assert.deepEqual(s.tasks[3].dependencies,[s.tasks[0].id]);
+  assert.ok(s.tasks.every(task=>/^[1-9]\d*$/.test(task.id)));
+  assert.equal(s.tasks[1].id,'2');assert.deepEqual(s.tasks[1].dependencies,[s.tasks[0].id]);
+  assert.deepEqual(s.tasks[2].dependencies,['2']);assert.deepEqual(s.tasks[3].dependencies,[s.tasks[0].id]);
   assert.equal(migrateTaskIds(s),false);
 });

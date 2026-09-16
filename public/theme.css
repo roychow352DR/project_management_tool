@@ -1,4 +1,5 @@
 /* White by default; navy is the brand accent and the dark-mode canvas. */
+aside {overflow-y:auto}
 :root {
   color-scheme: light;
   --page:#ffffff; --panel:#ffffff; --surface:#f5f7fa; --sidebar:#f8f9fc;
@@ -115,6 +116,27 @@ dialog label select.priority-select {background:color-mix(in srgb,var(--priority
 .task-actions {display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
 .task-planning-action {padding:4px 0;color:var(--link);font-size:12px;text-align:left;white-space:nowrap}
 .task-planning-action:hover {text-decoration:underline}
+.gantt-subtask-toggle {display:flex;align-items:center;gap:7px;margin:0;white-space:nowrap;color:var(--text)}
+.gantt-subtask-toggle input {width:14px;height:14px;margin:0;accent-color:var(--accent)}
+.add-subtask-action {padding:0;color:var(--link);white-space:nowrap}
+.add-subtask-action:hover {text-decoration:underline}
+.list-row .task-title {padding-left:var(--task-indent,0)}
+.task-title-text {min-width:0;overflow-wrap:anywhere}
+.task-title-text small {display:block;margin-top:5px;color:var(--muted);font-size:12px;font-weight:400}
+.gantt-shell .gantt-task>span:first-child {padding-left:var(--task-indent,0)}
+.subtask-section {margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.subtask-heading {display:flex;align-items:center;justify-content:space-between;gap:10px}
+.subtask-heading h3 {margin:0;font-size:12px}
+.subtask-heading h3 span {margin-left:6px;color:var(--muted);font-weight:400}
+.subtask-list {max-height:260px;overflow:auto;border:1px solid var(--border);border-radius:6px}
+.subtask-row {display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px;text-align:left;border-bottom:1px solid var(--border)}
+.subtask-row:last-child {border-bottom:0}
+.subtask-row:hover {background:var(--hover)}
+.subtask-row>span:first-child {min-width:0;overflow-wrap:anywhere}
+.subtask-row b {font-weight:500}
+.subtask-row small {display:block;margin-top:5px;color:var(--muted);font-size:12px}
+.subtask-row .badge {flex-shrink:0}
+.subtask-empty {padding:0 12px;color:var(--muted)}
 .card .task-planning-action {display:block;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);width:100%}
 .backlog-heading {margin:0 0 18px}
 .backlog-heading h2 {font-size:12px;margin:0 0 6px}

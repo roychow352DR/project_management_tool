@@ -88,13 +88,13 @@ test('settings reject empty or duplicate options and field names', () => {
   assert.throws(() => validateSettings(settings), /unique/);
 });
 test('deleting and restoring a task removes then restores dependent links', () => {
-  const s = workspace(), target = s.tasks.find(t => t.id === 'QA-106');
+  const s = workspace(), target = s.tasks.find(t => t.id === '6');
   removeItem(s, 'task', target.id);
   assert.ok(!s.tasks.some(t => t.id === target.id));
-  assert.deepEqual(s.tasks.find(t => t.id === 'QA-107').dependencies, []);
+  assert.deepEqual(s.tasks.find(t => t.id === '7').dependencies, []);
   restoreItem(s, s.trash[0].id);
   assert.deepEqual(s.tasks.find(t => t.id === target.id),target);
-  assert.deepEqual(s.tasks.find(t => t.id === 'QA-107').dependencies,['QA-106']);
+  assert.deepEqual(s.tasks.find(t => t.id === '7').dependencies,['6']);
   assert.equal(s.trash.length,0);
 });
 test('project deletion cascades and restores tasks including custom data', () => {

@@ -21,7 +21,7 @@
   ],
   "tasks": [
     {
-      "id": "QA-101",
+      "id": "1",
       "projectId": "p1",
       "title": "Discovery & research",
       "start": "2026-09-01",
@@ -35,7 +35,7 @@
       "description": ""
     },
     {
-      "id": "QA-102",
+      "id": "2",
       "projectId": "p1",
       "title": "Stakeholder interviews",
       "start": "2026-09-02",
@@ -49,7 +49,7 @@
       "description": ""
     },
     {
-      "id": "QA-103",
+      "id": "3",
       "projectId": "p1",
       "title": "Competitive landscape",
       "start": "2026-09-03",
@@ -63,7 +63,7 @@
       "description": ""
     },
     {
-      "id": "QA-104",
+      "id": "4",
       "projectId": "p1",
       "title": "Define product requirements",
       "start": "2026-09-07",
@@ -77,7 +77,7 @@
       "description": ""
     },
     {
-      "id": "QA-105",
+      "id": "5",
       "projectId": "p1",
       "title": "Design & experience",
       "start": "2026-09-09",
@@ -91,7 +91,7 @@
       "description": ""
     },
     {
-      "id": "QA-106",
+      "id": "6",
       "projectId": "p1",
       "title": "Information architecture",
       "start": "2026-09-09",
@@ -105,7 +105,7 @@
       "description": ""
     },
     {
-      "id": "QA-107",
+      "id": "7",
       "projectId": "p1",
       "title": "Wireframes & user flows",
       "start": "2026-09-14",
@@ -116,12 +116,12 @@
       "group": "Design",
       "progress": 45,
       "dependencies": [
-        "QA-106"
+        "6"
       ],
       "description": ""
     },
     {
-      "id": "QA-108",
+      "id": "8",
       "projectId": "p1",
       "title": "Visual design system",
       "start": "2026-09-14",
@@ -135,7 +135,7 @@
       "description": ""
     },
     {
-      "id": "QA-109",
+      "id": "9",
       "projectId": "p1",
       "title": "Interactive prototype",
       "start": "2026-09-18",
@@ -149,7 +149,7 @@
       "description": ""
     },
     {
-      "id": "QA-110",
+      "id": "10",
       "projectId": "p1",
       "title": "Build & deliver",
       "start": "2026-09-20",
@@ -163,7 +163,7 @@
       "description": ""
     },
     {
-      "id": "QA-111",
+      "id": "11",
       "projectId": "p1",
       "title": "Frontend development",
       "start": "2026-09-25",
@@ -174,12 +174,12 @@
       "group": "Development",
       "progress": 0,
       "dependencies": [
-        "QA-109"
+        "9"
       ],
       "description": ""
     },
     {
-      "id": "QA-112",
+      "id": "12",
       "projectId": "p1",
       "title": "Backend & integrations",
       "start": "2026-09-21",
@@ -193,7 +193,7 @@
       "description": ""
     },
     {
-      "id": "QA-113",
+      "id": "13",
       "projectId": "p1",
       "title": "Quality assurance",
       "start": "2026-09-26",
@@ -207,7 +207,7 @@
       "description": ""
     },
     {
-      "id": "QA-114",
+      "id": "14",
       "projectId": "p1",
       "title": "Launch readiness",
       "start": "2026-09-30",
@@ -220,5 +220,6 @@
       "dependencies": [],
       "description": ""
     }
-  ]
+  ],
+  "nextTaskNumber": "15"
 }

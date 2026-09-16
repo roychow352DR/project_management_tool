@@ -1,15 +1,15 @@
 import { statusColor } from './model.js';
-import { isGanttTask } from './task-schedule.js';
+import { isVisibleGanttTask } from './task-schedule.js';
 import { figtreeFontFace } from './fonts/figtree.js';
 import { ganttTheme, ganttHeaders, ganttPeriodLabel, taskDateRange } from './gantt-style.js';
 import { ganttRows, timelineWindow, exportWindows, toDate, toDay } from './timeline.js';
 const esc = value => String(value ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short = (text,n) => [...String(text)].length>n ? [...String(text)].slice(0,n-1).join('')+'…' : String(text);
-function nameLines(text) {
+function nameLines(text,limit=37) {
   const chars=[...String(text)];
-  if(chars.length<=37)return [String(text)];
-  let cut=chars.slice(0,37).lastIndexOf(' ');if(cut<18)cut=37;
-  return [chars.slice(0,cut).join(''),short(chars.slice(cut).join('').trim(),37)];
+  if(chars.length<=limit)return [String(text)];
+  let cut=chars.slice(0,limit).lastIndexOf(' ');if(cut<limit/2)cut=limit;
+  return [chars.slice(0,cut).join(''),short(chars.slice(cut).join('').trim(),limit)];
 }
 function projectNameLines(name,width) {
   // A full font-size allowance per character also accommodates wide Unicode
@@ -24,7 +24,7 @@ function projectNameLines(name,width) {
   return lines.length?lines:[''];
 }
 export function buildGanttSVG({state,project,timeline,rows,pageLabel='',today=new Date().toISOString().slice(0,10),appearance='light'}) {
-  rows=rows.filter(row=>!row.id||isGanttTask(row)).filter((row,i,list)=>row.id||(list[i+1]?.id));
+  rows=rows.filter(row=>!row.id||isVisibleGanttTask(row,project.ganttShowSubtasks)).filter((row,i,list)=>row.id||(list[i+1]?.id));
   const theme=ganttTheme(appearance);
   const left=theme.labelWidth, chartWidth=timeline.width, padding=theme.padding, width=left+chartWidth+padding;
   const titleLines=projectNameLines(project.name,width-padding*2),titleOffset=(titleLines.length-1)*30;
@@ -60,10 +60,14 @@ export function buildGanttSVG({state,project,timeline,rows,pageLabel='',today=ne
     if(!row.id){
       body+=text(padding+20,center+4,row.group,`fill="${theme.muted}" font-weight="600"`);return;
     }
-    const lines=nameLines(row.title);
+    const indent=Math.min(row.depth||1,5)*14*(row.parentId?1:0);
+    const parentName=row.parentName||state.tasks?.find(task=>task.id===row.parentId)?.title;
+    const label=row.parentId&&!rows.some(task=>task.id===row.parentId)&&parentName?`${parentName} / ${row.title}`:row.title;
+    const lines=nameLines(label,Math.max(20,37-Math.ceil(indent/7)));
+    const labelX=padding+20+indent;
     body+=`<g><title>${esc(row.title)} | ${esc(row.status)} | ${esc(row.start)} - ${esc(row.end)}</title>`;
-    body+=text(padding+20,center+(lines.length>1?-3:4),lines[0]);
-    if(lines[1])body+=text(padding+20,center+11,lines[1]);
+    body+=text(labelX,center+(lines.length>1?-3:4),lines[0]);
+    if(lines[1])body+=text(labelX,center+11,lines[1]);
     const {x,end}=barPosition(row),color=statusColor(state,row.status);
     if(end>x){
       let barLeft=x,barEnd=end;
@@ -153,10 +157,10 @@ export function paginateRows(rows, limit=12) {
   return pages;
 }
 export function createExportPlan({format,state,project,tasks,timeline,pdfLayout='range',today=new Date().toISOString().slice(0,10),appearance='light'}) {
-  tasks=tasks.filter(isGanttTask);
+  tasks=tasks.filter(task=>isVisibleGanttTask(task,project.ganttShowSubtasks));
   if(!tasks.length)throw Error('No scheduled tasks available for export');
   if(!['pdf','png','svg'].includes(format))throw Error('Invalid export format');
-  const rows=ganttRows(tasks,state.settings.options.group.map(o=>o.label));
+  const rows=ganttRows(tasks,state.settings.options.group.map(o=>o.label),new Set(),state.tasks||tasks);
   if(format==='pdf'){
     const windows=pdfLayout==='detail'?exportWindows(timeline):[timelineWindow(timeline,timeline.start,timeline.end,840)];
     const rowPages=paginateRows(rows),pageCount=windows.length*rowPages.length;

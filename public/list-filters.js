@@ -15,7 +15,7 @@ export const emptyFilters = () => ({match:'all',rules:[]});
 
 export function filterFields(state,projectId) {
   const standard=[{id:'title',label:'Task name'},...builtinColumns].map(column=>{
-    const options=state.settings.options[column.id];
+    const options=column.id==='parentId'?state.tasks.filter(t=>t.projectId===projectId).map(t=>({id:t.id,label:t.title})):state.settings.options[column.id];
     const type=options?'dropdown':['start','end'].includes(column.id)?'date':column.id==='progress'?'number':column.id==='dependencies'?'dependencies':'text';
     return {...column,type,options:options || (type==='dependencies'?state.tasks.filter(t=>t.projectId===projectId).map(t=>({id:t.id,label:t.title})):[])};
   });
@@ -58,7 +58,7 @@ export function reconcileFilters(state,projectId,config=emptyFilters()) {
 }
 function fieldValue(task,field) {
   const raw=field.custom?task.customValues?.[field.id.slice(7)]:task[field.id];
-  if(field.type==='dropdown')return field.custom?raw:field.options.find(option=>option.label===raw)?.id;
+  if(field.type==='dropdown')return field.custom||field.id==='parentId'?raw:field.options.find(option=>option.label===raw)?.id;
   return raw;
 }
 function matchesRule(task,field,rule) {

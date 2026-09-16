@@ -162,9 +162,23 @@ Dependencies reschedule only fully dated active tasks with fully dated active pr
 
 ## Task details
 
+### Subtasks
+
+Open a task and select **Add subtask** in its **Subtasks** section, or use **＋ Subtask** in List, Backlog, or Board. Each task can have any number of subtasks; subtasks can also have their own subtasks. Each retains its own status, priority, QA Owner, description, custom fields, dependencies, and optional dates. Dates and progress are independent of the parent. New subtasks inherit the parent's group, priority, and planning state; ownership and dates start empty.
+
+Task details list direct subtasks. Adding or opening one saves the current task first. Creating a subtask closes the dialog and returns to the current project view. Use **Parent task** to reassign a task or select **None** to make it a top-level task. Circular relationships and parents from another project are rejected. List shows parent context and subtask counts; **Parent task** is also available in Columns and Filters.
+
+**Gantt → Show subtasks** controls subtask visibility for the current project and is saved across reloads. Subtasks are hidden by default. When enabled, scheduled active subtasks appear with indentation, including when a parent has no dates. Preview and PDF, PNG, and SVG exports follow the same setting. Backlog and undated tasks remain excluded. Hiding a subtask does not change its dates or scheduling dependencies.
+
+Moving a parent to Backlog or active planning moves its descendants with it. A subtask can be backlogged separately; its parent must be active before it can return to active planning. Deleting a parent moves the entire subtree to one Trash entry, with restoration preserving relationships. Restore a separately deleted parent before restoring its child.
+
+There is no configured task or subtask count limit. Browser resources and existing export size/page limits still apply. Workspace saves have a 50 MiB transport limit, adjustable with the container environment variable `MAX_WORKSPACE_BYTES` (bytes).
+
+### Descriptions and identifiers
+
 Descriptions automatically recognize HTTP, HTTPS, and `www.` links. Links open in a new tab from task details or the Description List column. Use **Edit** to update a description and **Preview** to read it; detected links are also available while editing. **Save changes** saves the task. Clicking outside the task dialog dismisses it without saving pending edits.
 
-Task IDs use the **QA-** prefix. Existing ORB IDs migrate automatically, including dependency references and tasks in Trash. The initial migration keeps a copy of the previous workspace in `workspace.before-qa-ids.json` inside the Docker data volume.
+Task numbers display the QA prefix followed by a sequential number: **QA-1, QA-2, QA-3, …**. Tasks and subtasks share one sequence across the workspace. The display prefix preserves existing numbers and relationships. Existing tasks are numbered in their saved order, followed by tasks in Trash; parent relationships, dependencies, and recovery links are updated together. New tasks continue the saved sequence, including after deletion or restart. The numeric migration keeps a copy of the previous workspace in `workspace.before-numeric-ids.json` inside the Docker data volume.
 
 ## Gantt reference styling
 

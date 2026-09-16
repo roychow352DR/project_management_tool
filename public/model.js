@@ -1,4 +1,6 @@
-import { migrateTaskIds } from './task-ids.js';
+import { descendantIds, validateTaskHierarchy, orderTaskTree } from './task-hierarchy.js';
+import { setTaskBacklog } from './task-schedule.js';
+import { migrateTaskIds, nextTaskId } from './task-ids.js';
 export const statusPalette = ['#64748b','#2563eb','#16805d','#b96a12','#8755b2','#bf4c64','#0e8190','#9a593d'];
 export const defaultStatusColor = index => statusPalette[index % statusPalette.length];
 export const priorityPalette = ['#16805d','#a66a0a','#b4233c','#8755b2','#2563eb','#0e8190'];
@@ -36,8 +38,9 @@ export function normalize(state) {
   state.settings.options.status.forEach((option, index) => { option.color ??= defaultStatusColor(index); });
   state.settings.options.priority.forEach((option, index) => { option.color ??= defaultPriorityColor(option.label,index); });
   for (const task of [...state.tasks,...state.trash.flatMap(entry=>entry.tasks)]) {
-    task.customValues ??= {}; task.owner ??= ''; task.start ??= ''; task.end ??= ''; task.backlog ??= false;
+    task.customValues ??= {}; task.owner ??= ''; task.start ??= ''; task.end ??= ''; task.backlog ??= false; task.parentId ??= '';
   }
+  for (const project of state.projects) project.ganttShowSubtasks ??= false;
   return state;
 }
 export function statusColor(state, label) {
@@ -105,21 +108,39 @@ export function applySettings(state, next) {
 }
 export function removeItem(state, kind, id) {
   const project = kind === 'project' ? state.projects.find(p => p.id === id) : null;
-  const tasks = state.tasks.filter(t => kind === 'project' ? t.projectId === id : t.id === id);
+  const descendants = kind === 'task' ? descendantIds(state.tasks, id) : new Set();
+  const tasks = state.tasks.filter(t => kind === 'project' ? t.projectId === id : t.id === id || descendants.has(t.id));
   if (!project && !tasks.length) throw Error('Item unavailable');
   const ids = new Set(tasks.map(t => t.id));
   const links = state.tasks.flatMap(t => t.dependencies.filter(dep => ids.has(dep)).map(dep => ({ taskId: t.id, dependency: dep })));
-  state.trash.unshift({ id: crypto.randomUUID(), kind, name: project?.name || tasks[0].title, project: project ? structuredClone(project) : null, tasks: structuredClone(tasks), links, deletedAt: new Date().toISOString() });
+  state.trash.unshift({ id: crypto.randomUUID(), kind, name: project?.name || state.tasks.find(t => t.id === id)?.title || tasks[0].title, project: project ? structuredClone(project) : null, tasks: structuredClone(tasks), links, deletedAt: new Date().toISOString() });
   state.tasks = state.tasks.filter(t => !ids.has(t.id));
   state.tasks.forEach(t => { t.dependencies = t.dependencies.filter(dep => !ids.has(dep)); });
   if (project) state.projects = state.projects.filter(p => p.id !== id);
+}
+export function saveTask(state, next) {
+  const previous = state.tasks.find(task => task.id === next.id);
+  const draft = {tasks: state.tasks.map(task => ({...task}))};
+  if (previous) Object.assign(draft.tasks.find(task => task.id === next.id), next);
+  else draft.tasks.push({...next});
+  if (previous && previous.backlog !== next.backlog) setTaskBacklog(draft, next.id, next.backlog);
+  validateTaskHierarchy(draft.tasks);
+  state.tasks = draft.tasks;
+  state.nextTaskNumber = nextTaskId(state);
 }
 export function restoreItem(state, id) {
   const item = state.trash.find(e => e.id === id);
   if (!item) throw Error('Item unavailable');
   if (!item.project && item.tasks.some(t => !state.projects.some(p => p.id === t.projectId))) throw Error('Parent project restoration required');
+  const restored = structuredClone(item.tasks), combined = [...state.tasks, ...restored];
+  const byId = new Map(combined.map(task => [task.id, task]));
+  if (restored.some(task => task.parentId && !byId.has(task.parentId))) throw Error('Parent task restoration required');
+  for (const task of orderTaskTree(restored, combined)) {
+    if (byId.get(task.parentId)?.backlog) byId.get(task.id).backlog = true;
+  }
+  validateTaskHierarchy(combined);
   if (item.project) state.projects.push(structuredClone(item.project));
-  state.tasks.push(...structuredClone(item.tasks));
+  for (const task of restored) state.tasks.push(task);
   const ids = new Set(state.tasks.map(t => t.id));
   state.tasks.forEach(t => { t.dependencies = t.dependencies.filter(dep => ids.has(dep)); });
   for (const link of item.links) {

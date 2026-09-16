@@ -18,18 +18,18 @@ test('legacy tasks remain active and blank dates survive persistence and Trash r
   const s=workspace([task('legacy'),task('undated',{start:null,end:undefined,backlog:true})]);
   assert.equal(s.tasks[0].backlog,false);
   const undated=structuredClone(s.tasks[1]);assert.equal(undated.start,'');assert.equal(undated.end,'');
-  removeItem(s,'task','undated');
+  removeItem(s,'task',undated.id);
   const reloaded=normalize(JSON.parse(JSON.stringify(s)));
   restoreItem(reloaded,reloaded.trash[0].id);
-  assert.deepEqual(reloaded.tasks.find(t=>t.id==='undated'),undated);
+  assert.deepEqual(reloaded.tasks.find(t=>t.id===undated.id),undated);
 });
 
 test('moving a task between active and backlog retains its dates, status, and custom data',()=>{
   const s=workspace([task('release',{status:'In progress',dependencies:['parent']})]);
   const original=structuredClone(s.tasks[0]);
-  setTaskBacklog(s,'release',true);
+  setTaskBacklog(s,original.id,true);
   assert.deepEqual(s.tasks[0],{...original,backlog:true});
-  setTaskBacklog(s,'release',false);assert.deepEqual(s.tasks[0],original);
+  setTaskBacklog(s,original.id,false);assert.deepEqual(s.tasks[0],original);
 });
 
 test('backlog and incomplete tasks cannot extend the timeline or create Gantt rows',()=>{
@@ -65,12 +65,12 @@ test('dependency scheduling preserves missing dates and backlog schedules',()=>{
 test('returning a dated predecessor to active planning resumes dependency scheduling and preserves duration',()=>{
   const s=workspace([task('parent',{backlog:true}),task('child',{start:'2026-09-02',end:'2026-09-04',dependencies:['parent']})]);
   settleTaskDependencies(s.tasks);assert.equal(s.tasks[1].start,'2026-09-02');
-  setTaskBacklog(s,'parent',false);settleTaskDependencies(s.tasks);
+  setTaskBacklog(s,s.tasks[0].id,false);settleTaskDependencies(s.tasks);
   assert.equal(s.tasks[1].start,'2026-09-16');assert.equal(s.tasks[1].end,'2026-09-18');
 });
 
 test('Unscheduled filters include either missing date and omit fully dated active tasks',()=>{
   const s=workspace([task('scheduled'),task('start-only',{end:''}),task('end-only',{start:''}),task('undated',{start:'',end:''})]);
   const config={match:'any',rules:['start','end'].map(field=>({id:field,field,type:'date',operator:'empty'}))};
-  assert.deepEqual(filterListTasks(s,s.tasks,'p',config).map(t=>t.id),['start-only','end-only','undated']);
+  assert.deepEqual(filterListTasks(s,s.tasks,'p',config).map(t=>t.title),['start-only','end-only','undated']);
 });

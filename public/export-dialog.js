@@ -4,7 +4,7 @@ export function openExportDialog({dialog,state,project,tasks,timeline,download,t
   let plan=null,page=0,previewURL=null,closed=false,generating=false;
   dialog.className='export-dialog';
   dialog.innerHTML=`<div class="modal-head">GANTT CHART<button class="close" aria-label="Close export preview">×</button></div>
-    <h2>Export preview</h2><p class="settings-intro">Full date range · Current task filters · All groups expanded</p>
+    <h2>Export preview</h2><p class="settings-intro">Full date range · Current task filters · All groups expanded · Subtasks ${project.ganttShowSubtasks?'included':'hidden'}</p>
     <div class="export-controls"><label class="export-format-label">File format<select id="export-format"><option value="pdf">PDF (.pdf)</option><option value="png">PNG (.png)</option><option value="svg">SVG (.svg)</option></select></label>
     <label class="export-appearance-label">Appearance<select id="export-appearance"><option value="light" ${appearance!=='dark'?'selected':''}>Light</option><option value="dark" ${appearance==='dark'?'selected':''}>Dark</option></select></label>
     <label>Start date<input type="date" id="export-start" value="${toDate(timeline.start)}" required></label><label>End date<input type="date" id="export-end" value="${toDate(timeline.end-1)}" required></label>

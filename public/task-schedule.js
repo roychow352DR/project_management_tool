@@ -1,3 +1,4 @@
+import { descendantIds } from './task-hierarchy.js';
 const DAY=86400000;
 export function validTaskDate(value) {
   if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
@@ -11,10 +12,14 @@ export function validTaskSchedule(task) {
 export const hasCompleteSchedule=task=>validTaskDate(task.start)&&validTaskDate(task.end)&&task.end>=task.start;
 export const isGanttTask=task=>task.backlog!==true&&hasCompleteSchedule(task);
 
+export const isVisibleGanttTask=(task,showSubtasks=false)=>isGanttTask(task)&&(showSubtasks||!task.parentId);
+
 export function setTaskBacklog(state,id,backlog) {
   const task=state.tasks.find(task=>task.id===id);
   if(!task)throw Error('Task unavailable');
-  task.backlog=backlog;
+  if(!backlog&&state.tasks.find(parent=>parent.id===task.parentId)?.backlog)throw Error('Move parent task to active first');
+  const descendants=descendantIds(state.tasks,id);
+  for(const member of state.tasks)if(member.id===id||descendants.has(member.id))member.backlog=backlog;
 }
 
 export function settleTaskDependencies(tasks) {

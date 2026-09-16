@@ -1,9 +1,11 @@
 import { customDisplay } from './model.js';
+import { formatTaskId } from './task-ids.js';
 export const builtinColumns = [
   {id:'owner',label:'QA Owner',width:145}, {id:'status',label:'Status',width:135},
   {id:'priority',label:'Priority',width:100}, {id:'start',label:'Start date',width:115},
   {id:'end',label:'End date',width:115}, {id:'group',label:'Group',width:140},
   {id:'progress',label:'Progress',width:95}, {id:'dependencies',label:'Predecessor tasks',width:180},
+  {id:'parentId',label:'Parent task',width:180},
   {id:'description',label:'Description',width:220},
 ];
 export function availableColumns(state) {
@@ -16,7 +18,8 @@ export function visibleColumns(state, project) {
 }
 export function columnValue(state, task, column) {
   if(column.field)return customDisplay(column.field,task.customValues?.[column.field.id]);
+  if(column.id==='parentId')return state.tasks.find(t=>t.id===task.parentId)?.title||'—';
   if(column.id==='progress')return `${task.progress}%`;
-  if(column.id==='dependencies')return task.dependencies.map(id=>state.tasks.find(t=>t.id===id)?.title||id).join('; ')||'—';
+  if(column.id==='dependencies')return task.dependencies.map(id=>state.tasks.find(t=>t.id===id)?.title||formatTaskId(id)).join('; ')||'—';
   return task[column.id]||'—';
 }

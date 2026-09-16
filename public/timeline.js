@@ -1,3 +1,4 @@
+import { orderTaskTree } from './task-hierarchy.js';
 import { isGanttTask } from './task-schedule.js';
 export const DAY = 86400000;
 export const toDay = value => Date.parse(`${value}T00:00:00Z`) / DAY;
@@ -47,9 +48,9 @@ export function timelineTicks({start, end, dayWidth, scale}) {
   }
   return {top:segments(scale==='daily'?'month':'year'),bottom:segments(scale==='daily'?'day':scale==='monthly'?'month':'quarter')};
 }
-export function ganttRows(tasks, groups, collapsed = new Set()) {
+export function ganttRows(tasks, groups, collapsed = new Set(), allTasks = tasks) {
   return groups.flatMap(group => {
-    const members=tasks.filter(t=>t.group===group&&isGanttTask(t));
+    const members=orderTaskTree(tasks.filter(t=>t.group===group&&isGanttTask(t)),allTasks);
     return members.length ? [{group}, ...(collapsed.has(group)?[]:members)] : [];
   });
 }
